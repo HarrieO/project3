@@ -2,7 +2,12 @@
 <resources>
 
     <string name="app_name">Hangman10196129</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_highscores">Highscores</string>
+    <string name="explanation">Guess the word or a letter.</string>
+    <string name="wrong_letter">Too bad!</string>
+    <string name="wrong_input">Incorrect input: guess a word or letter.</string>
+    <string name="wrong_word">That is not the word!</string>
+    <string name="keyboard_letters">qwertyuiop/asdfghjkl/zxcvbnm</string>
 
 </resources>

@@ -25,36 +25,30 @@
             android:id="@+id/linearLayout"
             android:weightSum="1">
 
-            <FrameLayout
-                android:layout_width="240dp"
-                android:layout_height="214dp"
-                android:id="@+id/canvasFrame"
-                android:layout_gravity="center"
-                android:padding="20dp"></FrameLayout>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text=" SECRETWORD"
-                android:id="@+id/secretWord"
+                android:text="Word length"
+                android:id="@+id/textView"
+                android:layout_gravity="center_horizontal" />
+
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/seekBar"
                 android:layout_gravity="center_horizontal" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="You have X guesses left."
-                android:id="@+id/leftMessage"
+                android:text="New Text"
+                android:id="@+id/textView2"
                 android:layout_gravity="center_horizontal" />
 
-            <TableLayout
-                android:layout_width="fill_parent"
+            <SeekBar
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/keyboard">
-
-            </TableLayout>
-
+                android:id="@+id/seekBar2" />
         </LinearLayout>
     </ScrollView>
 
