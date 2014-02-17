@@ -9,5 +9,9 @@
     <string name="wrong_input">Incorrect input: guess a word or letter.</string>
     <string name="wrong_word">That is not the word!</string>
     <string name="keyboard_letters">qwertyuiop/asdfghjkl/zxcvbnm</string>
+    <string name="no_guesses">Number of guesses</string>
+    <string name="word_length">Word length</string>
+    <string name="word_length_key">WORD_LENGTH</string>
+    <string name="no_guesses_key">NO_GUESSES</string><string name="highscores_top">Highscores</string><string name="play">Play</string>
 
 </resources>

@@ -49,8 +49,11 @@ public class GameFragment extends Fragment {
         }
     }
 
-    public void onStop(){
-        super.onStop();
+    public void onPause(){
+        super.onPause();
+        if(game.solved() || !game.guessesLeft()){
+            loadGame(true);
+        }
         game.save(getActivity().getPreferences(Context.MODE_PRIVATE));
         FrameLayout frame = (FrameLayout)getView().findViewById(R.id.canvasFrame);
         frame.removeView(canvas);
@@ -60,25 +63,27 @@ public class GameFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(id, container, false);
-
+        ((MainActivity) getActivity()).setActiveMenu(true);
         return rootView;
     }
 
     public void loadGame(){
         loadGame(false);
     }
+
+    public int getInitialGuesses(){
+        return getActivity().getPreferences(Context.MODE_PRIVATE).getInt(
+                getString(R.string.no_guesses_key), 8) ;
+    }
+
     public void loadGame(boolean forceNew){
-        Log.d("Keyboard", "Loading game.");
-        game = Hangman.load(getActivity().getPreferences(Context.MODE_PRIVATE));
+         game = Hangman.load(getActivity().getPreferences(Context.MODE_PRIVATE));
 
         if(game == null || forceNew || game.solved() || !game.guessesLeft()){
-            Log.d("Keyboard", "New game.");
-            game = new Hangman("secret", 10);
+            game = new Hangman("secret", getInitialGuesses());
             resetKeyBoard();
         }
-        Log.d("Keyboard", "Status: " + game.display());
-        Log.d("Keyboard", "Solved: " + game.solved());
-        Log.d("Keyboard", "Guesses left: " + game.guessesLeft());
+
         if(canvas == null)
             canvas = new HangmanCanvas(getActivity(), game) ;
         else
@@ -117,12 +122,13 @@ public class GameFragment extends Fragment {
                 TableRow.LayoutParams.WRAP_CONTENT,
                 TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
         String letters = getString(R.string.keyboard_letters);
+        Button.OnClickListener KeyboardListener = new KeyboardListener();
         for(int i = 0; i < letters.length(); i++){
             char letter = letters.charAt(i);
             if(letter != '/'){
                 Button button = new Button(getActivity());
                 button.setText(String.valueOf(letter));
-                button.setOnClickListener(new KeyboardListener());
+                button.setOnClickListener(KeyboardListener);
                 if(game.hasGuessed(letter))
                     button.setEnabled(false);
                 row.addView(button, buttonParams);
@@ -136,16 +142,8 @@ public class GameFragment extends Fragment {
     }
     public void resetKeyBoard(){
         TableLayout table = (TableLayout) getView().findViewById(R.id.keyboard);
-
-        if(table == null){
-            Log.d("Keyboard", "keyboard not found");
-            return ;
-
-        }
-        Log.d("Keyboard", "table size: " + table.getChildCount());
         for(int i = 0 ; i < table.getChildCount() ; i++ ){
             TableRow row = (TableRow) table.getChildAt(i);
-            Log.d("Keyboard", "row size: " + row.getChildCount());
             for(int j = 0 ; j < row.getChildCount() ; j++){
                 Button button = (Button) row.getChildAt(j);
                 button.setEnabled(true);
@@ -158,8 +156,10 @@ public class GameFragment extends Fragment {
         public void onClick(View view) {
             if(game.guessesLeft()){
                 Button button = (Button) view ;
-                button.setEnabled(false);
-                guess(button.getText().charAt(0));
+                if(!game.solved() && game.guessesLeft()){
+                    button.setEnabled(false);
+                    guess(button.getText().charAt(0));
+                }
             }
         }
     }
@@ -177,25 +177,16 @@ public class GameFragment extends Fragment {
 
             builder.setPositiveButton("New Puzzle", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-
                     loadGame(true);
                     updateScreen();
                 }
-            })
-                    .setNegativeButton("Highscores", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            loadGame(true);
-                            updateScreen();
-                        }
-                    })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener(){
-
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            loadGame(true);
-                            updateScreen();
-                        }
-                    });
+            }).setNegativeButton("Highscores", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    loadGame(true);
+                    ((MainActivity) getActivity()).transition(new HighscoresFragment());
+                }
+            });
+            builder.setCancelable(false);
             // Create the AlertDialog object and return it
             return builder.create();
         }
