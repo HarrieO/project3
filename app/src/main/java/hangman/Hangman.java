@@ -81,6 +81,12 @@ public class Hangman {
         return startGuesses - guesses ;
     }
 
+    public int score(){
+        if(!solved())
+            return 0 ;
+        return (int) Math.round(0.7 * Math.pow(26-incorrectGuesses(),2) + (secretWord.length()));
+    }
+
     public boolean guessesLeft(){
         return guesses != 0 ;
     }

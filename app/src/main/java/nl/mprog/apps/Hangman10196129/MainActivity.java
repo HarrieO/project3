@@ -1,37 +1,17 @@
 package nl.mprog.apps.Hangman10196129;
 
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
-import hangman.Hangman;
-import hangman.HangmanCanvas;
+import nl.mprog.apps.Hangman10196129.fragments.HighscoresFragment;
+import nl.mprog.apps.Hangman10196129.fragments.MenuFragment;
+import nl.mprog.apps.Hangman10196129.fragments.SettingsFragment;
 
 public class MainActivity extends ActionBarActivity {
 
