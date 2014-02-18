@@ -1,6 +1,7 @@
 package nl.mprog.apps.Hangman10196129;
 
 
+import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import hangman.Hangman;
+import nl.mprog.apps.Hangman10196129.database.WordDatabase;
 import nl.mprog.apps.Hangman10196129.fragments.HighscoresFragment;
 import nl.mprog.apps.Hangman10196129.fragments.MenuFragment;
 import nl.mprog.apps.Hangman10196129.fragments.SettingsFragment;
@@ -81,4 +84,21 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public int getInitialGuesses(){
+        return getPreferences(Context.MODE_PRIVATE).getInt(getString(R.string.no_guesses_key), 8) ;
+    }
+
+    public int getWordLength(){
+        return getPreferences(Context.MODE_PRIVATE).getInt(getString(R.string.word_length_key), 7) ;
+    }
+
+    public Hangman newGame(){
+        WordDatabase db = new WordDatabase(this);
+        Hangman game = new Hangman(db.get(getWordLength()), getInitialGuesses());
+        game.save(getPreferences(Context.MODE_PRIVATE));
+        return game ;
+    }
+    public boolean gameStarted(){
+        return getPreferences(Context.MODE_PRIVATE).getString(Hangman.GUESSED,"").length() > 0;
+    }
 }

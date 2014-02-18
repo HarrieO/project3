@@ -31,6 +31,7 @@ android {
 }
 
 dependencies {
+    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
     compile 'com.android.support:support-v4:19.0.0'
     compile 'com.android.support:gridlayout-v7:19.0.0'
     compile 'com.android.support:appcompat-v7:+'

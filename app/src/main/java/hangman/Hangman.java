@@ -18,7 +18,7 @@ public class Hangman {
     private final int startGuesses ;
 
     public Hangman(String secretWord, String guessed, int guesses, int startGuesses){
-        this.secretWord = secretWord ;
+        this.secretWord = secretWord.toLowerCase() ;
         this.display = "" ;
         for(int i = 0 ; i < secretWord.length() ;i++){
             display += "_" ;
