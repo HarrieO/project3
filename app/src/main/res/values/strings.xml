@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Hangman10196129</string>
+    <string name="app_name">Hangman</string>
     <string name="action_settings">Settings</string>
     <string name="action_highscores">Highscores</string>
     <string name="explanation">Guess the word or a letter.</string>
@@ -11,6 +11,7 @@
     <string name="keyboard_letters">qwertyuiop/asdfghjkl/zxcvbnm</string>
     <string name="no_guesses">Number of guesses</string>
     <string name="word_length">Word length</string>
+    <string name="new_puzzle">New Puzzle</string>
     <string name="word_length_key">WORD_LENGTH</string>
     <string name="no_guesses_key">NO_GUESSES</string><string name="highscores_top">Highscores</string><string name="play">Play</string><string name="hangman_title">Hangman</string>
 

@@ -8,10 +8,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import hangman.Hangman;
 import nl.mprog.apps.Hangman10196129.database.WordDatabase;
+import nl.mprog.apps.Hangman10196129.fragments.GameFragment;
 import nl.mprog.apps.Hangman10196129.fragments.HighscoresFragment;
 import nl.mprog.apps.Hangman10196129.fragments.MenuFragment;
 import nl.mprog.apps.Hangman10196129.fragments.SettingsFragment;
@@ -32,6 +34,8 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+
+
     protected void onStop(){
         super.onStop();
 
@@ -44,31 +48,30 @@ public class MainActivity extends ActionBarActivity {
         transaction.replace(R.id.container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return true ;
     }
 
     public void setActiveMenu(boolean active){
-
         this.menuActive = active ;
+        super.supportInvalidateOptionsMenu();
     }
 
     public boolean onPrepareOptionsMenu(Menu menu){
         super.onPrepareOptionsMenu(menu);
-        return menuActive ;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_game, menu);
+        menu.getItem(1).setVisible(menuActive);
+        menu.getItem(2).setVisible(menuActive);
         return true;
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+       getMenuInflater().inflate(R.menu.main_game, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         menuActive = false ;
 
@@ -77,11 +80,28 @@ public class MainActivity extends ActionBarActivity {
             fragment = new SettingsFragment();
         else if (id == R.id.action_highscore)
             fragment = new HighscoresFragment();
+        else if (id == R.id.action_new_game){
+            FragmentManager fm = getSupportFragmentManager();
+            Fragment frag = fm.findFragmentById(R.id.container);
+            if(!frag.getClass().equals(GameFragment.class)){
+                newGame();
+                fragment = new GameFragment();
+            } else {
+                ((GameFragment)frag).loadGame(true);
+            }
+        }
 
         if (fragment != null) {
             return transition(fragment);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        getSupportFragmentManager().popBackStack();
+        return true;
     }
 
     public int getInitialGuesses(){

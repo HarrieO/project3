@@ -40,7 +40,7 @@ public class MenuFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((MainActivity) getActivity()).setActiveMenu(false);
         Button.OnClickListener listener = new Button.OnClickListener() {
             @Override

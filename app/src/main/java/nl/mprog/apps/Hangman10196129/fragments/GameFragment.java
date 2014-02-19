@@ -54,9 +54,8 @@ public class GameFragment extends Fragment {
 
     public void onPause(){
         super.onPause();
-        if(game.solved() || !game.guessesLeft()){
+        if(game.solved() || !game.guessesLeft())
             loadGame(true);
-        }
         game.save(getActivity().getPreferences(Context.MODE_PRIVATE));
         FrameLayout frame = (FrameLayout)getView().findViewById(R.id.canvasFrame);
         frame.removeView(canvas);
@@ -86,6 +85,7 @@ public class GameFragment extends Fragment {
             canvas = new HangmanCanvas(getActivity(), game) ;
         else
             canvas.setGame(game);
+        updateScreen();
     }
 
     public void updateScreen(){
