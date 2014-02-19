@@ -13,6 +13,6 @@
     <string name="word_length">Word length</string>
     <string name="new_puzzle">New Puzzle</string>
     <string name="word_length_key">WORD_LENGTH</string>
-    <string name="no_guesses_key">NO_GUESSES</string><string name="highscores_top">Highscores</string><string name="play">Play</string><string name="hangman_title">Hangman</string>
+    <string name="no_guesses_key">NO_GUESSES</string><string name="highscores_top">Highscores</string><string name="play">Play</string><string name="hangman_title">Hangman</string><string name="highscores_word">Word</string><string name="Incorrect"/><string name="highscores_incorrect">Incorrect</string><string name="highscores_score">Score</string>
 
 </resources>

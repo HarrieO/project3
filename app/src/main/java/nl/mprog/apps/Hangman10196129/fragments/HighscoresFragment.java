@@ -21,9 +21,12 @@ import nl.mprog.apps.Hangman10196129.database.HighscoreDatabase;
  */
 public class HighscoresFragment extends Fragment {
 
-    private final static LinearLayout.LayoutParams WORDPARAMS = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-    {WORDPARAMS.gravity = Gravity.CENTER_HORIZONTAL;}
+    private final static TableRow.LayoutParams WORDPARAMS = new TableRow.LayoutParams(
+            0, TableRow.LayoutParams.WRAP_CONTENT, 1.3f);
+    {WORDPARAMS.setMargins(4,4,4,4);}
+    private final static TableRow.LayoutParams SCOREPARAMS = new TableRow.LayoutParams(
+            0, TableRow.LayoutParams.WRAP_CONTENT, 1f);
+    {SCOREPARAMS.setMargins(4,4,4,4);}
 
     private final static ViewGroup.LayoutParams ROWPARAMS = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -59,8 +62,7 @@ public class HighscoresFragment extends Fragment {
             ((LinearLayout) getView().findViewById(R.id.highscores_list)).addView(txt, ROWPARAMS);
         } else {
             addRow(cursor);
-            while(cursor.hasNext())
-            {
+            while(cursor.hasNext()){
                 cursor.next();
                 addRow(cursor);
             }
@@ -72,18 +74,32 @@ public class HighscoresFragment extends Fragment {
 
     public void addRow(HighscoreCursor cursor){
 
+        TableRow row = new TableRow(getActivity());
+
+
+
         TextView word = new TextView(getActivity());
         word.setText(cursor.getWord());
-        ((LinearLayout) getView().findViewById(R.id.highscore_word_list)).addView(word, WORDPARAMS);
+        word.setTextSize(18);
+        word.setWidth(0);
+        word.setPadding(30, 10, 30, 10);
+        row.addView(word, WORDPARAMS);
         
 
         TextView incorrect = new TextView(getActivity());
         incorrect.setText(String.valueOf(cursor.getIncorrect()));
-        ((LinearLayout) getView().findViewById(R.id.highscore_incorrect_list)).addView(incorrect, WORDPARAMS);
+        incorrect.setTextSize(18);
+        incorrect.setWidth(0);
+        incorrect.setPadding(40,10,40,10);
+        row.addView(incorrect, SCOREPARAMS);
 
         TextView score = new TextView(getActivity());
         score.setText(String.valueOf(cursor.getScore()));
-        ((LinearLayout) getView().findViewById(R.id.highscore_score_list)).addView(score, WORDPARAMS);
+        score.setTextSize(18);
+        score.setWidth(0);
+        score.setPadding(40, 10, 40, 10);
+        row.addView(score, SCOREPARAMS);
 
+        ((TableLayout) getView().findViewById(R.id.highscores_table)).addView(row);
     }
 }
