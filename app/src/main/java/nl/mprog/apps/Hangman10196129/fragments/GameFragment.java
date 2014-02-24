@@ -89,7 +89,7 @@ public class GameFragment extends Fragment {
 
     public void updateScreen(){
 
-        updateTextView(R.id.secretWord, game.display());
+        updateTextView(R.id.secretWord, game.screenDisplay());
         updateTextView(R.id.leftMessage, "You have " + game.guesses() + " guesses left.");
         canvas.invalidate();
     }

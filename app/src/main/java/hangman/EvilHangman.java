@@ -72,7 +72,7 @@ public class EvilHangman extends Hangman {
 
     @Override
     public String getSecretWord() {
-        return state;
+        return db.getRandom(state,new ArrayList<String>(),impossibles);
     }
 
     @Override
@@ -113,32 +113,31 @@ public class EvilHangman extends Hangman {
         if(with <= without)
             return new Pair(state,without,0) ;
         else
-            return bestAdd(state,guess,0, new Pair(state,without,0));
+            return bestAdd(state,both,guess,0, new Pair(state,without,0));
     }
 
-    public Pair bestAdd(String state, char guess, int start, Pair best){
-        return  bestAdd(state, guess, start, best, new ArrayList<String>(), 0);
+    public Pair bestAdd(String state, long previous, char guess, int start, Pair best){
+        return  bestAdd(state, previous, guess, start, best, new ArrayList<String>(), 0);
     }
-    public Pair bestAdd(String state, char guess, int start, Pair best, ArrayList<String> unlike, int added){
+    public Pair bestAdd(String state, long previous, char guess, int start, Pair best,
+                        ArrayList<String> unlike, int added){
         if(start >= length){
-            Long count = getFullCount(state,unlike);
-            if(count > best.count){
-                Log.d("Hangman", "Newbest " + state + ": " + count);
-                best.set(state, count, added);
+            if(previous > best.count){
+                Log.d("Hangman", "Newbest " + state + ": " + previous);
+                best.set(state, previous, added);
             }
         } else if(state.charAt(start) != '_')
-            return  bestAdd(state, guess, start+1, best, unlike, added);
+            return  bestAdd(state,previous, guess, start+1, best, unlike, added);
         else {
-            long both = getFullCount(state,unlike);
+            long both = previous;
             String cur = state.substring(0,start) + String.valueOf(guess) + state.substring(start+1);
             long with = getFullCount(cur,unlike);
             long without = both - with;
-            Log.d("Hangman", state + " total " + both);
             Log.d("Hangman", cur + " with " + with);
             Log.d("Hangman", state + " without " + without);
             if(without > best.count){
                 unlike.add(cur);
-                bestAdd(state,guess,start+1,best,unlike,added);
+                bestAdd(state,without,guess,start+1,best,unlike,added);
                 unlike.remove(unlike.size()-1);
             }
             if(with > best.count){
@@ -149,24 +148,15 @@ public class EvilHangman extends Hangman {
                 Log.d("Hangman", cur + " expand " + expand);
                 unlike.remove(unlike.size()-1);
                 if(expand > limit){
-                    bestAdd(cur,guess,start+1,best,unlike,added+1);
+                    bestAdd(cur,expand,guess,start+1,best,unlike,added+1);
                 } else {
-                    bestAdd(cur,guess,length,best,unlike,added+1);
+                    bestAdd(cur,limit,guess,length,best,unlike,added+1);
                 }
             }
         }
         return best;
     }
 
-    public void addConfigs(ArrayList<String> configs, String current, int start, char letter){
-        if(start < length){
-            String with = current.substring(0,start) + String.valueOf(letter) +
-                    current.substring(start+1);
-            configs.add(with);
-            addConfigs(configs, current, start+1, letter);
-            addConfigs(configs, with, start+1, letter);
-        }
-    }
     public String addWildCards(char letter, int times){
         return "%" + repeat(String.valueOf(letter) + "%",times);
     }

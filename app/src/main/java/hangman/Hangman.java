@@ -15,7 +15,7 @@ public abstract class Hangman {
     public final static String GUESSED      = "GUESSED"       ;
     public final static String EVIL         = "EVIL"       ;
 
-    private String guessed, incorrect, alphabet ;
+    private String guessed ;
     private int    guesses;
     private final int startGuesses ;
 
@@ -23,7 +23,6 @@ public abstract class Hangman {
         this.guesses = guesses;
         this.guessed = guessed;
         this.startGuesses = startGuesses;
-        this.incorrect = "";
         updateDisplay(guessed);
     }
 
@@ -74,9 +73,7 @@ public abstract class Hangman {
     public abstract void updateDisplay(String multipleGuess);
     public abstract boolean guessLetter(char letter);
 
-    public String getIncorrect(){
-        return  incorrect ;
-    }
+
     public int guesses(){
         return guesses ;
     }
@@ -113,9 +110,19 @@ public abstract class Hangman {
         boolean correct = guessLetter(letter);
         if(!correct){
             guesses--;
-            incorrect = incorrect + String.valueOf(letter);
         }
         return correct;
+    }
+
+    public String screenDisplay(){
+        String d = display();
+        String screen = "";
+        for(int i = 0;i<d.length();i++){
+            screen += String.valueOf(d.charAt(i));
+            if(i < d.length()-1)
+                screen += " ";
+        }
+        return  screen ;
     }
 
 }

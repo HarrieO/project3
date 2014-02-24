@@ -58,7 +58,7 @@ public class WordDatabase {
         return c.getString(c.getColumnIndex(FeedEntry.COLUMN_NAME_WORD));
     }
 
-    public long count(String state, ArrayList<String> unlike, ArrayList<String> impossibilities) {
+    public Cursor getCursor(String state, ArrayList<String> unlike, ArrayList<String> impossibilities) {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -84,9 +84,19 @@ public class WordDatabase {
             whereArgs[2 + incorrectLength + i] = unlike.get(i) ;
         }
 
-        Cursor c = db.query(FeedEntry.TABLE_NAME, projection, whereClause, whereArgs, null, null, null);
+        return db.query(FeedEntry.TABLE_NAME, projection, whereClause, whereArgs, null, null, null);
+
+    }
+
+    public long count(String state, ArrayList<String> unlike, ArrayList<String> impossibilities) {
+        return getCursor(state,unlike,impossibilities).getCount();
+    }
+
+    public String getRandom(String state, ArrayList<String> unlike, ArrayList<String> impossibilities) {
+        Cursor c =  getCursor(state,unlike,impossibilities);
         c.moveToFirst();
-        return c.getCount();
+        c.move((int)Math.floor(Math.random()*c.getCount()));
+        return c.getString(c.getColumnIndex(FeedEntry.COLUMN_NAME_WORD));
     }
 
     public long count() {
