@@ -21,7 +21,6 @@ import hangman.HangmanCanvas;
 import nl.mprog.apps.Hangman10196129.MainActivity;
 import nl.mprog.apps.Hangman10196129.R;
 import nl.mprog.apps.Hangman10196129.database.HighscoreDatabase;
-import nl.mprog.apps.Hangman10196129.database.WordDatabase;
 
 /**
  * Created by hroosterhuis on 11/02/14.
@@ -31,12 +30,12 @@ public class GameFragment extends Fragment {
     private int id ;
     public Hangman game ;
     public HangmanCanvas canvas ;
+
     public GameFragment() {
         this.id = R.layout.fragment_main_game;
     }
     public GameFragment(int id){
         this.id = id ;
-
     }
 
     @Override
@@ -74,7 +73,7 @@ public class GameFragment extends Fragment {
     }
 
     public void loadGame(boolean forceNew){
-         game = Hangman.load(getActivity().getPreferences(Context.MODE_PRIVATE));
+         game = ((MainActivity) getActivity()).loadGame();
 
         if(game == null || forceNew || game.solved() || !game.guessesLeft()){
             game = ((MainActivity) getActivity()).newGame();
@@ -107,7 +106,7 @@ public class GameFragment extends Fragment {
             AfterGameDialogFragment dialog = new AfterGameDialogFragment();
             if(game.solved()){
                 HighscoreDatabase db = new HighscoreDatabase(getActivity());
-                db.put(game.getSecretword(),game.incorrectGuesses(),game.score());
+                db.put(game.getSecretWord(),game.incorrectGuesses(),game.score());
             }
             dialog.show(getActivity().getSupportFragmentManager(),"Finished game");
         }
@@ -153,7 +152,10 @@ public class GameFragment extends Fragment {
         }
     }
 
+
     public class KeyboardListener implements View.OnClickListener {
+
+
         @Override
         public void onClick(View view) {
             if(game.guessesLeft()){
@@ -174,7 +176,7 @@ public class GameFragment extends Fragment {
             if(game.solved()){
                 builder.setMessage("You scored " + game.score() + "!\n With " + game.incorrectGuesses() + " incorrect guesses.");
             } else {
-                builder.setMessage("You failed to guess the word!\nThe correct word was: " + game.getSecretword());
+                builder.setMessage("You failed to guess the word!\nThe correct word was: " + game.getSecretWord());
             }
 
             builder.setPositiveButton("New Puzzle", new DialogInterface.OnClickListener() {

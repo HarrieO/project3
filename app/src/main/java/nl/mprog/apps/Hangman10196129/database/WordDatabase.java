@@ -12,6 +12,7 @@ import nl.mprog.apps.Hangman10196129.database.WordDatabaseHelper.WordReaderContr
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by hroosterhuis on 18/02/14.
@@ -55,6 +56,37 @@ public class WordDatabase {
         c.moveToFirst();
         c.move((int)Math.floor(c.getCount()*Math.random()));
         return c.getString(c.getColumnIndex(FeedEntry.COLUMN_NAME_WORD));
+    }
+
+    public long count(String state, ArrayList<String> unlike, ArrayList<String> impossibilities) {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        String[] projection = {
+                FeedEntry._ID,
+                FeedEntry.COLUMN_NAME_WORD,
+                FeedEntry.COLUMN_NAME_LENGTH
+        };
+
+        String whereClause = FeedEntry.COLUMN_NAME_LENGTH + " =  ? AND " + FeedEntry.COLUMN_NAME_WORD +
+                " LIKE ?" ;
+
+        int incorrectLength = impossibilities.size();
+        int statesCount     = unlike.size();
+        String[] whereArgs = new String[2 + incorrectLength + statesCount];
+        whereArgs[0] = String.valueOf(state.length());
+        whereArgs[1] = state;
+        for(int i = 0;i < incorrectLength;i++){
+            whereClause = whereClause + " AND " + FeedEntry.COLUMN_NAME_WORD  + " NOT LIKE ?";
+            whereArgs[2 + i] = impossibilities.get(i) ;
+        }
+        for(int i = 0;i < statesCount;i++){
+            whereClause = whereClause + " AND " + FeedEntry.COLUMN_NAME_WORD  + " NOT LIKE ?";
+            whereArgs[2 + incorrectLength + i] = unlike.get(i) ;
+        }
+
+        Cursor c = db.query(FeedEntry.TABLE_NAME, projection, whereClause, whereArgs, null, null, null);
+        c.moveToFirst();
+        return c.getCount();
     }
 
     public long count() {

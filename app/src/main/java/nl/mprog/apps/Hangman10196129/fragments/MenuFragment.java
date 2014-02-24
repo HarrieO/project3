@@ -1,19 +1,15 @@
 package nl.mprog.apps.Hangman10196129.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 
-import hangman.Hangman;
 import nl.mprog.apps.Hangman10196129.MainActivity;
 import nl.mprog.apps.Hangman10196129.R;
-import nl.mprog.apps.Hangman10196129.database.WordDatabase;
 
 /**
  * Created by hroosterhuis on 11/02/14.

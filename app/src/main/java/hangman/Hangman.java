@@ -1,52 +1,58 @@
 package hangman;
 
 import android.content.SharedPreferences;
-import android.widget.EditText;
+
+import nl.mprog.apps.Hangman10196129.database.WordDatabase;
 
 /**
  * Created by hroosterhuis on 21/01/14.
  */
-public class Hangman {
+public abstract class Hangman {
 
     public final static String SECRETWORD   = "SECRET WORD"   ;
     public final static String GUESSES      = "GUESSES"       ;
     public final static String STARTGUESSES = "START GUESSES" ;
     public final static String GUESSED      = "GUESSED"       ;
+    public final static String EVIL         = "EVIL"       ;
 
-    private String secretWord, guessed, display, alphabet ;
+    private String guessed, incorrect, alphabet ;
     private int    guesses;
     private final int startGuesses ;
 
-    public Hangman(String secretWord, String guessed, int guesses, int startGuesses){
-        this.secretWord = secretWord.toLowerCase() ;
-        this.display = "" ;
-        for(int i = 0 ; i < secretWord.length() ;i++){
-            display += "_" ;
-        }
+    public Hangman(String guessed, int guesses, int startGuesses){
         this.guesses = guesses;
         this.guessed = guessed;
         this.startGuesses = startGuesses;
+        this.incorrect = "";
         updateDisplay(guessed);
     }
 
-    public Hangman(String secretWord, String guessed, int guesses){
-        this(secretWord,guessed,guesses,guesses);
+    public Hangman(String guessed, int guesses){
+        this(guessed,guesses,guesses);
     }
 
-    public Hangman(String secretWord, int guesses){
-        this(secretWord,"",guesses);
+    public Hangman(int guesses){
+        this("",guesses);
     }
 
-    public static Hangman load(SharedPreferences sharedPref){
+    public static Hangman load(SharedPreferences sharedPref, WordDatabase db){
         String secretWord, guessed ;
         int    guesses, startGuesses ;
+        boolean evil ;
         secretWord   = sharedPref.getString(SECRETWORD, "");
         guessed      = sharedPref.getString(GUESSED,    "");
         guesses      = sharedPref.getInt(GUESSES,0);
         startGuesses = sharedPref.getInt(STARTGUESSES,8);
+        evil         = sharedPref.getBoolean(EVIL, false);
         if(guesses <= 0 || secretWord.equals(""))
             return null ;
-        Hangman game = new Hangman(secretWord, guessed, guesses, startGuesses);
+
+        Hangman game ;
+        /*if(evil)
+            game = new Hangman(secretWord, guessed, guesses, startGuesses);
+        else */
+            //game = new FairHangman(secretWord, guessed, guesses, startGuesses);
+        game = new EvilHangman(db, secretWord, guessed, guesses, startGuesses);
         if(game.solved())
             return null ;
         return game;
@@ -54,21 +60,23 @@ public class Hangman {
 
     public void save(SharedPreferences sharedPref){
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(SECRETWORD,    this.secretWord);
+        editor.putString(SECRETWORD,    this.getSecretWord());
         editor.putString(GUESSED,       this.guessed);
-        editor.putInt(GUESSES, this.guesses);
+        editor.putInt(GUESSES,          this.guesses);
         editor.putInt(STARTGUESSES,     this.startGuesses);
+        editor.putBoolean(EVIL, this.evil());
         editor.commit();
     }
 
-    public String display(){
-        String screenDisplay = "";
-        for(int i = 0 ; i < display.length() ; i++){
-            screenDisplay += display.charAt(i) + " ";
-        }
-        return screenDisplay ;
-    }
+    public abstract String display();
+    public abstract String getSecretWord();
+    public abstract boolean evil();
+    public abstract void updateDisplay(String multipleGuess);
+    public abstract boolean guessLetter(char letter);
 
+    public String getIncorrect(){
+        return  incorrect ;
+    }
     public int guesses(){
         return guesses ;
     }
@@ -84,57 +92,30 @@ public class Hangman {
     public int score(){
         if(!solved())
             return 0 ;
-        return (int) Math.round(0.7 * Math.pow(26-incorrectGuesses(),2) + (secretWord.length()));
+        return (int) Math.round(0.7 * Math.pow(26-incorrectGuesses(),2) + (getSecretWord().length()));
     }
 
     public boolean guessesLeft(){
         return guesses != 0 ;
     }
 
-    public String getSecretword(){
-        return secretWord ;
-    }
-
-    public boolean solved(){
-        return this.secretWord.equals(this.display);
-    }
-
-    public boolean guessWord(String word){
-        if(secretWord.equals(word.toLowerCase())){
-            display = word ;
-            return true ;
-        }
-        guesses--;
-        return false;
-    }
+    public abstract boolean solved();
 
     public boolean hasGuessed(char letter){
         return guessed.indexOf(letter) >= 0 ;
     }
+    
     public boolean guess(char letter){
-        Character.toLowerCase(letter);
+        letter = Character.toLowerCase(letter);
         if(guesses <= 0 || guessed.indexOf(letter) >= 0 || solved())
             return false ;
-        if(!secretWord.contains(String.valueOf(letter)))
-            guesses--;
         guessed = guessed + letter ;
-        return updateDisplay(letter);
-    }
-
-    private void updateDisplay(String multipleGuess){
-        for(int i = 0 ; i < multipleGuess.length() ; i++){
-            updateDisplay(multipleGuess.charAt(i));
+        boolean correct = guessLetter(letter);
+        if(!correct){
+            guesses--;
+            incorrect = incorrect + String.valueOf(letter);
         }
-    }
-    private boolean updateDisplay(char guess){
-        boolean found = false ;
-        for(int i = 0; i < secretWord.length(); i++){
-            if(secretWord.charAt(i) == guess){
-                display = display.substring(0,i) + guess + display.substring(i+1);
-                found = true ;
-            }
-        }
-        return found ;
+        return correct;
     }
 
 }

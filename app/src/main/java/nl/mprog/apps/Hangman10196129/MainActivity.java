@@ -8,9 +8,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import hangman.EvilHangman;
+import hangman.FairHangman;
 import hangman.Hangman;
 import nl.mprog.apps.Hangman10196129.database.WordDatabase;
 import nl.mprog.apps.Hangman10196129.fragments.GameFragment;
@@ -86,6 +87,7 @@ public class MainActivity extends ActionBarActivity {
             if(!frag.getClass().equals(GameFragment.class)){
                 newGame();
                 fragment = new GameFragment();
+                fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             } else {
                 ((GameFragment)frag).loadGame(true);
             }
@@ -114,10 +116,16 @@ public class MainActivity extends ActionBarActivity {
 
     public Hangman newGame(){
         WordDatabase db = new WordDatabase(this);
-        Hangman game = new Hangman(db.get(getWordLength()), getInitialGuesses());
+        Hangman game = new FairHangman(db.get(getWordLength()), getInitialGuesses());
+        game = new EvilHangman(db,getWordLength(),getInitialGuesses());
         game.save(getPreferences(Context.MODE_PRIVATE));
         return game ;
     }
+
+    public Hangman loadGame(){
+        return Hangman.load(getPreferences(Context.MODE_PRIVATE),new WordDatabase(this));
+    }
+
     public boolean gameStarted(){
         return getPreferences(Context.MODE_PRIVATE).getString(Hangman.GUESSED,"").length() > 0;
     }
