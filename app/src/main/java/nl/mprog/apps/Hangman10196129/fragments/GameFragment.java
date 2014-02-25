@@ -73,7 +73,7 @@ public class GameFragment extends Fragment {
     }
 
     public void loadGame(boolean forceNew){
-         game = ((MainActivity) getActivity()).loadGame();
+        game = ((MainActivity) getActivity()).loadGame();
 
         if(game == null || forceNew || game.solved() || !game.guessesLeft()){
             game = ((MainActivity) getActivity()).newGame();
@@ -89,7 +89,7 @@ public class GameFragment extends Fragment {
 
     public void updateScreen(){
 
-        updateTextView(R.id.secretWord, game.screenDisplay());
+        updateTextView(R.id.secretWord, game.display());
         updateTextView(R.id.leftMessage, "You have " + game.guesses() + " guesses left.");
         canvas.invalidate();
     }

@@ -1,6 +1,7 @@
 package hangman;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import nl.mprog.apps.Hangman10196129.database.WordDatabase;
 
@@ -35,7 +36,7 @@ public abstract class Hangman {
         this("",guesses);
     }
 
-    public abstract String display();
+    public abstract String state();
     public abstract String getSecretWord();
     public abstract boolean evil();
     public abstract void updateDisplay(String multipleGuess);
@@ -58,7 +59,7 @@ public abstract class Hangman {
         if(!solved())
             return 0 ;
         if(evil())
-            return (int) Math.round(0.7 * Math.pow(26-incorrectGuesses(),3) + (getSecretWord().length()));
+            return (int) Math.round(0.1 * Math.pow(26-incorrectGuesses(),3) + (getSecretWord().length()));
         else
             return (int) Math.round(0.7 * Math.pow(26-incorrectGuesses(),2) + (getSecretWord().length()));
     }
@@ -66,8 +67,6 @@ public abstract class Hangman {
     public boolean guessesLeft(){
         return guesses != 0 ;
     }
-
-
 
     public boolean hasGuessed(char letter){
         return guessed.indexOf(letter) >= 0 ;
@@ -79,14 +78,17 @@ public abstract class Hangman {
             return false ;
         guessed = guessed + letter ;
         boolean correct = guessLetter(letter);
-        if(!correct){
+        if(!correct)
             guesses--;
-        }
         return correct;
     }
 
-    public String screenDisplay(){
-        String d = display();
+    /**
+     * Display for fragment.
+     * @return State with space between letters.
+     */
+    public String display(){
+        String d = state();
         String screen = "";
         for(int i = 0;i<d.length();i++){
             screen += String.valueOf(d.charAt(i));
@@ -96,6 +98,12 @@ public abstract class Hangman {
         return  screen ;
     }
 
+    /**
+     * Loads hangman game out of preferences.
+     * @param sharedPref Preferences from which to load.
+     * @param db WordDatabase to be used for Evil gameplay
+     * @return Ongoing Hangman game
+     */
     public static Hangman load(SharedPreferences sharedPref, WordDatabase db){
         String secretWord, guessed ;
         int    guesses, startGuesses ;
@@ -105,6 +113,10 @@ public abstract class Hangman {
         guesses      = sharedPref.getInt(GUESSES,0);
         startGuesses = sharedPref.getInt(STARTGUESSES,8);
         evil         = sharedPref.getBoolean(EVIL, false);
+
+        Log.d("Hangman", "State " + secretWord);
+        Log.d("Hangman", "Guessed " + guessed);
+        Log.d("Hangman", "Guesses " + guesses);
         if(guesses <= 0 || secretWord.equals(""))
             return null ;
 
@@ -116,9 +128,14 @@ public abstract class Hangman {
 
         if(game.solved())
             return null ;
+
         return game;
     }
 
+    /**
+     * Saves Hangman game in preferences.
+     * @param sharedPref
+     */
     public void save(SharedPreferences sharedPref){
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(SECRETWORD,    this.getSecretWord());

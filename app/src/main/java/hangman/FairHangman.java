@@ -36,12 +36,12 @@ public class FairHangman extends Hangman {
     }
 
     @Override
-    public String display() {
+    public String state() {
         return display ;
     }
 
     public boolean solved(){
-        return this.getSecretWord().equals(this.display());
+        return this.getSecretWord().equals(this.state());
     }
 
     @Override
