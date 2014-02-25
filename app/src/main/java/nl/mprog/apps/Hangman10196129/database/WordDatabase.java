@@ -105,18 +105,47 @@ public class WordDatabase {
      * @return
      */
     public long count(String state, ArrayList<String> unlike, ArrayList<String> impossibilities) {
-        return getCursor(state,unlike,impossibilities).getCount();
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        String[] projection = {
+                FeedEntry._ID,
+                FeedEntry.COLUMN_NAME_WORD,
+                FeedEntry.COLUMN_NAME_LENGTH
+        };
+
+        String whereClause = FeedEntry.COLUMN_NAME_LENGTH + " =  ? AND " + FeedEntry.COLUMN_NAME_WORD +
+                " LIKE ?" ;
+
+        int incorrectLength = impossibilities.size();
+        int statesCount     = unlike.size();
+        String[] whereArgs = new String[2 + incorrectLength + statesCount];
+        whereArgs[0] = String.valueOf(state.length());
+        whereArgs[1] = state;
+        for(int i = 0;i < incorrectLength;i++){
+            whereClause = whereClause + " AND " + FeedEntry.COLUMN_NAME_WORD  + " NOT LIKE ?";
+            whereArgs[2 + i] = impossibilities.get(i) ;
+        }
+        for(int i = 0;i < statesCount;i++){
+            whereClause = whereClause + " AND " + FeedEntry.COLUMN_NAME_WORD  + " NOT LIKE ?";
+            whereArgs[2 + incorrectLength + i] = unlike.get(i) ;
+        }
+
+        String rawQuery = "SELECT COUNT(*) FROM " + FeedEntry.TABLE_NAME + " WHERE " +
+                whereClause ;
+
+        Cursor c = db.rawQuery(rawQuery, whereArgs);
+        c.moveToFirst();
+        return c.getLong(0);
     }
 
+    /**
+     * Returns a random word that fits the restrictions. To make the loser feel bad.
+     * Such Evil is done here.
+     */
     public String getRandom(String state, ArrayList<String> unlike, ArrayList<String> impossibilities) {
         Cursor c =  getCursor(state,unlike,impossibilities);
         c.moveToFirst();
         c.move((int)Math.floor(Math.random()*c.getCount()));
         return c.getString(c.getColumnIndex(FeedEntry.COLUMN_NAME_WORD));
-    }
-
-    public long count() {
-        return DatabaseUtils.queryNumEntries(mDbHelper.getReadableDatabase(),
-                FeedEntry.TABLE_NAME);
     }
 }
