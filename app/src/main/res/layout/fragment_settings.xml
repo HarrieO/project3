@@ -51,6 +51,16 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/no_guesses_bar"
                 android:indeterminate="false" />
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/evil_text"
+                android:id="@+id/evil"
+                android:layout_below="@+id/scrollView"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:checked="false" />
         </LinearLayout>
     </ScrollView>
 

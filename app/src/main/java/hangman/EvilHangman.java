@@ -23,6 +23,7 @@ public class EvilHangman extends Hangman {
     public EvilHangman(WordDatabase db, int length, String guessed, int guesses, int startGuesses){
         super(guessed, guesses, startGuesses);
         this.length = length;
+        updateDisplay(guessed);
         init(db);
     }
 
@@ -30,6 +31,7 @@ public class EvilHangman extends Hangman {
         super(guessed, guesses);
         this.length = length;
         init(db);
+        updateDisplay(guessed);
     }
 
     public EvilHangman(WordDatabase db, int length, int guesses){
@@ -42,12 +44,14 @@ public class EvilHangman extends Hangman {
         super(guessed, guesses, startGuesses);
         this.length = state.length();
         init(db);
+        updateDisplay(guessed);
     }
 
     public EvilHangman(WordDatabase db, String state, String guessed, int guesses){
         super(guessed, guesses);
         this.length = state.length();
         init(db);
+        updateDisplay(guessed);
     }
 
     public EvilHangman(WordDatabase db, String state, int guesses){
@@ -72,7 +76,7 @@ public class EvilHangman extends Hangman {
 
     @Override
     public String getSecretWord() {
-        return db.getRandom(state,new ArrayList<String>(),impossibles);
+        return db.getRandom(state,new ArrayList<String>(),impossibles).toLowerCase();
     }
 
     @Override
@@ -82,7 +86,13 @@ public class EvilHangman extends Hangman {
 
     @Override
     public void updateDisplay(String multipleGuess) {
-
+        ArrayList<Character> guessed = new ArrayList<Character>(26);
+        for(int i = 0; i < multipleGuess.length();i++)
+            if(!guessed.contains(multipleGuess.charAt(i)))
+                guessed.add(multipleGuess.charAt(i));
+        for(char c : guessed)
+            if(state.indexOf(c) >= 0)
+                impossibles.add(addWildCards(c,1));
     }
 
     private class Pair{

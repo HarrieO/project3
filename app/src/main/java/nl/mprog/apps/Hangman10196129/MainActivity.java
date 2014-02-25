@@ -114,10 +114,18 @@ public class MainActivity extends ActionBarActivity {
         return getPreferences(Context.MODE_PRIVATE).getInt(getString(R.string.word_length_key), 7) ;
     }
 
+    public boolean getEvil(){
+        return getPreferences(Context.MODE_PRIVATE).getBoolean(getString(R.string.evil_key), false) ;
+    }
+
     public Hangman newGame(){
         WordDatabase db = new WordDatabase(this);
-        Hangman game = new FairHangman(db.get(getWordLength()), getInitialGuesses());
-        game = new EvilHangman(db,getWordLength(),getInitialGuesses());
+        Hangman game ;
+        if(getEvil())
+            game = new EvilHangman(db,getWordLength(),getInitialGuesses());
+        else
+            game = new FairHangman(db.get(getWordLength()), getInitialGuesses());
+
         game.save(getPreferences(Context.MODE_PRIVATE));
         return game ;
     }

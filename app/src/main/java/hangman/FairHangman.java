@@ -1,5 +1,7 @@
 package hangman;
 
+import android.util.Log;
+
 /**
  * Created by hroosterhuis on 23/02/14.
  */
@@ -10,11 +12,13 @@ public class FairHangman extends Hangman {
     public FairHangman(String word, String guessed, int guesses, int startGuesses){
         super(guessed, guesses, startGuesses);
         init(word);
+        updateDisplay(guessed);
     }
 
     public FairHangman(String word, String guessed, int guesses){
         super(guessed, guesses);
         init(word);
+        updateDisplay(guessed);
     }
 
     public FairHangman(String word, int guesses){
@@ -23,11 +27,12 @@ public class FairHangman extends Hangman {
     }
 
     private void init(String word){
-        this.word = word;
+        this.word = word.toLowerCase();
         this.display = "" ;
         for(int i = 0 ; i < word.length() ;i++){
             display += "_" ;
         }
+
     }
 
     @Override
@@ -69,6 +74,7 @@ public class FairHangman extends Hangman {
 
     @Override
     public boolean guessLetter(char letter) {
+        Log.d("Hangman", "Guessed: " + String.valueOf(letter));
         return updateDisplay(letter);
     }
 }

@@ -6,7 +6,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import nl.mprog.apps.Hangman10196129.MainActivity;
@@ -27,7 +29,7 @@ public class SettingsFragment extends Fragment {
 
     }
 
-    private boolean changed ;
+    private boolean changed, evil ;
     private int length, guesses ;
 
     @Override
@@ -49,17 +51,25 @@ public class SettingsFragment extends Fragment {
         guesses = getActivity().getPreferences(Context.MODE_PRIVATE)
                 .getInt(getString(R.string.no_guesses_key), 1);
 
+        evil    = getActivity().getPreferences(Context.MODE_PRIVATE)
+                .getBoolean(getString(R.string.evil_key), false);
+
         WordDatabase db = new WordDatabase(getActivity());
 
         SeekBar barLength = (SeekBar) getView().findViewById(R.id.word_length_bar);
         barLength.setOnSeekBarChangeListener(
-                new changeListener(barLength, db.maxLength(), R.id.word_length, R.string.word_length,
+                new ChangeListener(barLength, db.maxLength(), R.id.word_length, R.string.word_length,
                         R.string.word_length_key));
 
         SeekBar barGuess = (SeekBar) getView().findViewById(R.id.no_guesses_bar);
         barGuess.setOnSeekBarChangeListener(
-                new changeListener(barGuess, 26, R.id.no_guesses, R.string.no_guesses,
+                new ChangeListener(barGuess, 26, R.id.no_guesses, R.string.no_guesses,
                         R.string.no_guesses_key));
+
+        Switch switchEvil = (Switch) getView().findViewById(R.id.evil);
+        switchEvil.setOnCheckedChangeListener(
+                new EvilListener(switchEvil, R.string.evil_key)
+        );
     }
 
     public void updateTextView(int id, String text) {
@@ -72,8 +82,9 @@ public class SettingsFragment extends Fragment {
         MainActivity activity = (MainActivity) getActivity();
         if(changed){
             getActivity().getPreferences(Context.MODE_PRIVATE).edit()
-                    .putInt(getString(R.string.word_length_key),length)
-                    .putInt(getString(R.string.no_guesses_key),guesses)
+                    .putInt(getString(R.string.word_length_key), length)
+                    .putInt(getString(R.string.no_guesses_key), guesses)
+                    .putBoolean(getString(R.string.evil_key), evil)
                     .commit();
 
             if(!activity.gameStarted())
@@ -83,11 +94,11 @@ public class SettingsFragment extends Fragment {
 
     }
 
-    public class changeListener implements SeekBar.OnSeekBarChangeListener {
+    public class ChangeListener implements SeekBar.OnSeekBarChangeListener {
 
         int max, textViewId, stringId, prefKey ;
 
-        changeListener(SeekBar bar, int max, int textViewId, int stringId, int prefKey){
+        ChangeListener(SeekBar bar, int max, int textViewId, int stringId, int prefKey){
             this.max        = max        ;
             this.textViewId = textViewId ;
             this.stringId   = stringId   ;
@@ -124,6 +135,25 @@ public class SettingsFragment extends Fragment {
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
+        }
+    }
+    public class EvilListener implements Switch.OnCheckedChangeListener {
+
+        int prefKey ;
+
+        EvilListener(Switch bar, int prefKey){
+            this.prefKey = prefKey;
+            bar.setChecked(loadSetting());
+        }
+
+        public boolean loadSetting(){
+            return getActivity().getPreferences(Context.MODE_PRIVATE).getBoolean(getString(prefKey),false);
+        }
+
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean value) {
+            evil    = value;
+            changed = true ;
         }
     }
 }
