@@ -36,7 +36,6 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(id, container, false);
-
         return rootView;
     }
 
@@ -86,7 +85,6 @@ public class SettingsFragment extends Fragment {
                     .putInt(getString(R.string.no_guesses_key), guesses)
                     .putBoolean(getString(R.string.evil_key), evil)
                     .commit();
-
             if(!activity.gameStarted())
                activity.newGame();
         }

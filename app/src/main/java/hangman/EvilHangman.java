@@ -20,20 +20,6 @@ public class EvilHangman extends Hangman {
     private  WordDatabase db ;
     private ArrayList<String> impossibles ;
 
-    public EvilHangman(WordDatabase db, int length, String guessed, int guesses, int startGuesses){
-        super(guessed, guesses, startGuesses);
-        this.length = length;
-        updateDisplay(guessed);
-        init(db);
-    }
-
-    public EvilHangman(WordDatabase db, int length, String guessed, int guesses){
-        super(guessed, guesses);
-        this.length = length;
-        init(db);
-        updateDisplay(guessed);
-    }
-
     public EvilHangman(WordDatabase db, int length, int guesses){
         super(guesses);
         this.length = length;
@@ -45,19 +31,6 @@ public class EvilHangman extends Hangman {
         this.length = state.length();
         init(db,state);
         updateDisplay(guessed);
-    }
-
-    public EvilHangman(WordDatabase db, String state, String guessed, int guesses){
-        super(guessed, guesses);
-        this.length = state.length();
-        init(db,state);
-        updateDisplay(guessed);
-    }
-
-    public EvilHangman(WordDatabase db, String state, int guesses){
-        super(guesses);
-        this.length = state.length();
-        init(db,state);
     }
 
     private void init(WordDatabase db){
@@ -79,6 +52,10 @@ public class EvilHangman extends Hangman {
         return state;
     }
 
+    /**
+     * Returns game state, if out of guesses random possibility is chosen.
+     * @return State of the game, can be an unfinished game state.
+     */
     @Override
     public String getSecretWord() {
         if(!guessesLeft())
@@ -92,6 +69,10 @@ public class EvilHangman extends Hangman {
         return true;
     }
 
+    /**
+     * Updates display when game is loaded.
+     * @param multipleGuess loaded guesses
+     */
     @Override
     public void updateDisplay(String multipleGuess) {
         ArrayList<Character> guessed = new ArrayList<Character>(26);
@@ -103,6 +84,9 @@ public class EvilHangman extends Hangman {
                 impossibles.add(addWildCards(c,1));
     }
 
+    /**
+     * Data structure for selecting the best state.
+     */
     private class Pair{
         public String state ;
         public Long   count ;
@@ -119,57 +103,71 @@ public class EvilHangman extends Hangman {
         }
     }
 
+    /**
+     * Finds best state to go to after guess.
+     * Best state is the state with the most possible words.
+     * @param guess Guessed letter.
+     * @return Pair structure for the best state to select.
+     */
     public Pair best(char guess){
         ArrayList<String> next = new ArrayList<String>();
         long both = getFullCount(state,next);
         next.add("%" + String.valueOf(guess) + "%");
         long without = getFullCount(state,next);
         long with    = both - without;
-        Log.d("Hangman", state + " total " + both);
+        Log.d("Hangman", "Guess " + guess);
+        Log.d("Hangman", state + " both " + both);
         Log.d("Hangman", state + " with " + with);
-        Log.d("Hangman", state + " without " + without);
+        Log.d("Hangman", state + " without "+ without);
         if(with <= without)
             return new Pair(state,without,0) ;
         else
             return bestAdd(state,both,guess,0, new Pair(state,without,0));
     }
 
+    /**
+     * Returns the best state after placing the guess or not.
+     */
     public Pair bestAdd(String state, long previous, char guess, int start, Pair best){
         return  bestAdd(state, previous, guess, start, best, new ArrayList<String>(), 0);
     }
-    public Pair bestAdd(String state, long previous, char guess, int start, Pair best,
+    public Pair bestAdd(String state, long previous, char guess, int index, Pair best,
                         ArrayList<String> unlike, int added){
-        if(start >= length){
+        if(index >= length){
             if(previous > best.count){
-                Log.d("Hangman", "Newbest " + state + ": " + previous);
                 best.set(state, previous, added);
             }
-        } else if(state.charAt(start) != '_')
-            return  bestAdd(state,previous, guess, start+1, best, unlike, added);
-        else {
+        } else if(state.charAt(index) != '_'){
+            return  bestAdd(state,previous, guess, index+1, best, unlike, added);
+        } else {
             long both = previous;
-            String cur = state.substring(0,start) + String.valueOf(guess) + state.substring(start+1);
+            String cur = state.substring(0,index) + String.valueOf(guess) + state.substring(index+1);
+            // possibilities with a letter added on index
             long with = getFullCount(cur,unlike);
+            // possibilities without a letter added on index
             long without = both - with;
-            Log.d("Hangman", cur + " with " + with);
-            Log.d("Hangman", state + " without " + without);
+            Log.d("Hangman", cur   + " with " + with);
+            Log.d("Hangman", state + " without "+ without);
             if(without > best.count){
                 unlike.add(cur);
-                bestAdd(state,without,guess,start+1,best,unlike,added);
+                bestAdd(state,without,guess,index+1,best,unlike,added);
                 unlike.remove(unlike.size()-1);
             }
             if(with > best.count){
                 unlike.add(addWildCards(guess,added+1));
+                // possibilities without more letters added
                 long limit = getFullCount(cur, unlike);
+                // possibilities with more letters added
                 long expand = with - limit ;
-                Log.d("Hangman", cur + " limit " + limit);
-                Log.d("Hangman", cur + " expand " + expand);
+                Log.d("Hangman", state + " limit " + limit);
+                Log.d("Hangman", state + " expand " + expand);
                 unlike.remove(unlike.size()-1);
-                if(expand > limit){
-                    bestAdd(cur,expand,guess,start+1,best,unlike,added+1);
-                } else {
+                if(expand > limit)
+                    //explore possibilities when another letter is added
+                    bestAdd(cur,expand,guess,index+1,best,unlike,added+1);
+                else
+                    //stop searching and skip to comparing case
                     bestAdd(cur,limit,guess,length,best,unlike,added+1);
-                }
             }
         }
         return best;
@@ -180,28 +178,27 @@ public class EvilHangman extends Hangman {
     }
     public String repeat(String txt, int times){
         String temp = "" ;
-        for(int i = 0; i<times;i++){
+        for(int i = 0; i<times;i++)
             temp += txt;
-        }
         return temp ;
     }
 
+    /**
+     * Player guesses letter, Evil algorithm picks the state with most possibilities, to avoid the
+     * player from guessing the word.
+     * @param letter
+     * @return
+     */
     @Override
     public synchronized boolean guessLetter(char letter) {
 
         Pair best = best(letter);
         if(!this.state.equals(best.state)){
             this.state = best.state;
-            String imp = "%" + String.valueOf(letter) + "%";
-            for(int i = 0; i<best.added;i++){
-                imp += String.valueOf(letter) + "%";
-            }
-            impossibles.add(imp);
-            Log.d("Hangman", "Impossible " + imp);
+            impossibles.add(addWildCards(letter, best.added+1));
             return true ;
-        } else {
+        } else
             impossibles.add("%" + String.valueOf(letter) + "%");
-        }
         return false;
     }
 
@@ -210,6 +207,9 @@ public class EvilHangman extends Hangman {
         return state.indexOf("_") < 0 ;
     }
 
+    /**
+     * Get count of words for a state, without correction meaning (_a__ includes _a_a_)
+     */
     public long getFullCount(String state, ArrayList<String> unlike){
         long count = db.count(state, unlike, impossibles);
         return count ;

@@ -29,7 +29,6 @@ public class MenuFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(id, container, false);
-
         return rootView;
     }
 

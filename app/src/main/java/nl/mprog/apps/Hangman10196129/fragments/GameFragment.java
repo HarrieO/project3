@@ -41,7 +41,7 @@ public class GameFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-        loadGame(false);
+        loadGame();
         updateScreen();
         createKeyBoard();
         FrameLayout frame = (FrameLayout)getView().findViewById(R.id.canvasFrame);
@@ -72,14 +72,16 @@ public class GameFragment extends Fragment {
         loadGame(false);
     }
 
+    /**
+     * Loads a game into the display. If no game is active a new game is created.
+     * @param forceNew If true a new game is forced to load, discarting the active game.
+     */
     public void loadGame(boolean forceNew){
         game = ((MainActivity) getActivity()).loadGame();
-
         if(game == null || forceNew || game.solved() || !game.guessesLeft()){
             game = ((MainActivity) getActivity()).newGame();
             resetKeyBoard();
         }
-
         if(canvas == null)
             canvas = new HangmanCanvas(getActivity(), game) ;
         else
@@ -88,7 +90,6 @@ public class GameFragment extends Fragment {
     }
 
     public void updateScreen(){
-
         updateTextView(R.id.secretWord, game.display());
         updateTextView(R.id.leftMessage, "You have " + game.guesses() + " guesses left.");
         canvas.invalidate();
@@ -174,9 +175,11 @@ public class GameFragment extends Fragment {
             // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             if(game.solved()){
-                builder.setMessage("You scored " + game.score() + "!\n With " + game.incorrectGuesses() + " incorrect guesses.");
+                builder.setMessage("You scored " + game.score() + " for " + game.getSecretWord() +
+                        "!\n with " + game.incorrectGuesses() + " incorrect guesses.");
             } else {
-                builder.setMessage("You failed to guess the word!\nThe correct word was: " + game.getSecretWord());
+                builder.setMessage("You failed to guess the word!\nThe correct word was: " +
+                        game.getSecretWord());
             }
 
             builder.setPositiveButton("New Puzzle", new DialogInterface.OnClickListener() {

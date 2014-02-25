@@ -15,19 +15,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
+ * Word database to access all words stored in the game.
  * Created by hroosterhuis on 18/02/14.
  */
 public class WordDatabase {
 
     private WordDatabaseHelper mDbHelper = null;
-    private Context context;
-    private int limit = 10;
 
     public WordDatabase(Context context) {
-        this.context = context;
         mDbHelper = new WordDatabaseHelper(context);
     }
 
+    /**
+     * Returns the lenght of the longest word in the database.
+     * @return
+     */
     public int maxLength(){
         Cursor c = mDbHelper.getReadableDatabase().rawQuery(
                 "SELECT MAX(" + FeedEntry.COLUMN_NAME_LENGTH + ") as max FROM " + FeedEntry.TABLE_NAME, null
@@ -37,7 +39,11 @@ public class WordDatabase {
         return c.getInt(c.getColumnIndex("max"));
     }
 
-
+    /**
+     * Returns a random word of given length.
+     * @param length
+     * @return
+     */
     public String get(int length) {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
@@ -58,6 +64,9 @@ public class WordDatabase {
         return c.getString(c.getColumnIndex(FeedEntry.COLUMN_NAME_WORD));
     }
 
+    /**
+     * Returns a cursor used for Evil algorithm,words found are like state but unlike given arraylists
+     */
     public Cursor getCursor(String state, ArrayList<String> unlike, ArrayList<String> impossibilities) {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
@@ -88,6 +97,13 @@ public class WordDatabase {
 
     }
 
+    /**
+     * Returns the amount of possibilities
+     * @param state
+     * @param unlike
+     * @param impossibilities
+     * @return
+     */
     public long count(String state, ArrayList<String> unlike, ArrayList<String> impossibilities) {
         return getCursor(state,unlike,impossibilities).getCount();
     }

@@ -59,7 +59,7 @@ public abstract class Hangman {
         if(!solved())
             return 0 ;
         if(evil())
-            return (int) Math.round(0.1 * Math.pow(26-incorrectGuesses(),3) + (getSecretWord().length()));
+            return (int) Math.round(0.07 * Math.pow(26-incorrectGuesses(),3) + (getSecretWord().length()));
         else
             return (int) Math.round(0.7 * Math.pow(26-incorrectGuesses(),2) + (getSecretWord().length()));
     }

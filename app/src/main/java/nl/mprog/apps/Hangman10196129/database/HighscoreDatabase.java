@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import nl.mprog.apps.Hangman10196129.database.HighscoreDatabaseHelper.HighscoreReaderContract.FeedEntry;
 
 /**
+ * Highscore Database holds up to 30 highscores.
  * Created by hroosterhuis on 17/02/14.
  */
 public class HighscoreDatabase {

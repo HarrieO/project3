@@ -27,7 +27,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         menuActive = false ;
         setContentView(R.layout.activity_main_game);
-
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new MenuFragment())
@@ -35,13 +34,13 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-
-
     protected void onStop(){
         super.onStop();
-
     }
 
+    /**
+     * Transition to different fragment.
+     */
     public boolean transition(Fragment fragment){
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
@@ -84,24 +83,24 @@ public class MainActivity extends ActionBarActivity {
         else if (id == R.id.action_new_game){
             FragmentManager fm = getSupportFragmentManager();
             Fragment frag = fm.findFragmentById(R.id.container);
+
             if(!frag.getClass().equals(GameFragment.class)){
                 newGame();
                 fragment = new GameFragment();
                 fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            } else {
+            } else
+                //If game fragment is already on display, a new one is not created.
                 ((GameFragment)frag).loadGame(true);
-            }
-        }
 
-        if (fragment != null) {
-            return transition(fragment);
         }
+        if (fragment != null)
+            return transition(fragment);
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        //This method is called when the up button is pressed. Just the pop back stack.
         getSupportFragmentManager().popBackStack();
         return true;
     }
